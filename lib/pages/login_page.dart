@@ -4,8 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:mychat_app/constants.dart';
 import 'package:mychat_app/helper/snack_bar.dart';
+import 'package:mychat_app/pages/bloc/auth_bloc/auth_bloc.dart';
 import 'package:mychat_app/pages/chat_page.dart';
-import 'package:mychat_app/pages/cubit/login_cubit/login_cubit.dart';
+
+import 'package:mychat_app/pages/cubit/chat_cubit/chat_cubit.dart';
+
 import 'package:mychat_app/pages/register_page.dart';
 import 'package:mychat_app/widget/custom_button.dart';
 import 'package:mychat_app/widget/custom_textfild.dart';
@@ -19,16 +22,17 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
+    return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
        if(state is LoginLoading){
         isloding=true;
        }
        else if(state is LoginSuccess){
+        BlocProvider.of<ChatCubit>(context).getMessages();
         Navigator.pushNamed(context, ChatPage.id);
         isloding=false;
        }
-       else if(state is LoginFailur){
+       else if(state is LoginFailure){
         showsnackbar(context, state.errMessage);
         isloding=false;
        }
@@ -96,7 +100,7 @@ class LoginPage extends StatelessWidget {
                   CustomButton(
                     onTap: () async {
                       if (formkey.currentState!.validate()) {
-                        BlocProvider.of<LoginCubit>(context).loginuser(email: email!, password: password!);
+                        BlocProvider.of<AuthBloc>(context).add(LoginEvent(email: email!, password: password!));
                       }
                     },
                     txt: 'Login',
@@ -141,8 +145,8 @@ Future<void> loginuser({required String email,required String password}) async {
     
  
       
-  UserCredential userCredential = await FirebaseAuth.instance
-      .signInWithEmailAndPassword(email: email!, password: password!);
+  UserCredential user = await FirebaseAuth.instance
+      .signInWithEmailAndPassword(email: email, password: password);
      
 
   }

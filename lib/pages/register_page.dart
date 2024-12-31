@@ -5,20 +5,14 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:mychat_app/constants.dart';
 import 'package:mychat_app/helper/snack_bar.dart';
 import 'package:mychat_app/pages/chat_page.dart';
-import 'package:mychat_app/pages/cubit/login_cubit/register_cubit/register_cubit.dart';
-import 'package:mychat_app/pages/login_page.dart';
+import 'package:mychat_app/pages/cubit/auth_cubit/auth_cubit.dart';
+
+
+
 import 'package:mychat_app/widget/custom_button.dart';
 import 'package:mychat_app/widget/custom_textfild.dart';
 
-class RegisterPage extends StatefulWidget {
-  RegisterPage({super.key});
-  static String id = 'registerpage';
-
-  @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
-
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPage extends StatelessWidget {
   String? email;
 
   String? password;
@@ -27,11 +21,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   GlobalKey<FormState> formkey = GlobalKey();
 
+  static String id = 'registerpage';
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RegisterCubit, RegisterState>(
+    return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if(state is RegisterLoading){
+          if(state is RegisterLoading){
           isloding=true;
 
         }else if(state is RegisterSuccess){
@@ -43,109 +39,112 @@ class _RegisterPageState extends State<RegisterPage> {
         isloding=false;
        }
       },
-      child: ModalProgressHUD(
-        inAsyncCall: isloding,
-        child: Scaffold(
-          backgroundColor: kPrimaryColor,
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Form(
-              key: formkey,
-              child: ListView(
-                children: [
-                  const SizedBox(
-                    height: 75,
-                  ),
-                  Image.asset(
-                    'assets/images/scholar.png',
-                    height: 100,
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Scholaer Chat',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Pacifico',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 75,
-                  ),
-                  const Text(
-                    'REGISTER',
-                    style: TextStyle(
-                      color: Colors.white,
+      builder: (context, state) {
+        return ModalProgressHUD(
+          inAsyncCall: isloding,
+          child: Scaffold(
+            backgroundColor: kPrimaryColor,
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Form(
+                key: formkey,
+                child: ListView(
+                  children: [
+                    const SizedBox(
+                      height: 75,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  CustomTextfild(
-                    onChanged: (data) {
-                      email = data;
-                    },
-                    hinttext: "Email",
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  CustomTextfild(
-                    onChanged: (data) {
-                      password = data;
-                    },
-                    hinttext: "Password",
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  CustomButton(
-                    onTap: () async {
-                      if (formkey.currentState!.validate()) {
-                       BlocProvider.of<RegisterCubit>(context).registeruser(email: email!, password: password!);
-                      }
-                    },
-                    txt: 'Register',
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'dont\'t have an account?',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          '  Login',
+                    Image.asset(
+                      'assets/images/scholar.png',
+                      height: 100,
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Scholaer Chat',
                           style: TextStyle(
-                            color: Color(0xffC7EDE6),
+                            color: Colors.white,
+                            fontFamily: 'Pacifico',
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 75,
+                    ),
+                    const Text(
+                      'REGISTER',
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomTextfild(
+                      onChanged: (data) {
+                        email = data;
+                      },
+                      hinttext: "Email",
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextfild(
+                      onChanged: (data) {
+                        password = data;
+                      },
+                      hinttext: "Password",
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    CustomButton(
+                      onTap: () async {
+                        if (formkey.currentState!.validate()) {
+                          BlocProvider.of<AuthCubit>(context)
+                              .registeruser(email: email!, password: password!);
+                        }
+                      },
+                      txt: 'Register',
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'dont\'t have an account?',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            '  Login',
+                            style: TextStyle(
+                              color: Color(0xffC7EDE6),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Future<void> registeruser() async {
-    UserCredential userCredential = await FirebaseAuth.instance
+    UserCredential user = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email!, password: password!);
   }
 }
